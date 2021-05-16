@@ -23,6 +23,22 @@ def create_spark_session():
 
 
 def process_song_data(spark, input_data, output_data):
+    """
+    Read all JSON files related to the songs in the Sparkify app 
+    to create dimensional tables for the data lake.
+
+    Read JSON format and store produced tables in Parquet formt in the 
+    specified output directory.
+
+    Parameters:
+    ==================
+    spark: Running/Active Spark session
+    input_data: S3 bucket or local directory to the JSON files
+    output_data: S3 bucket or local directory to write parquet files
+
+    Returns: None
+    """
+
     # get filepath to song data file
     song_data = os.path.join(input_data, 'song_data/*/*/*/*.json')
     
@@ -44,6 +60,23 @@ def process_song_data(spark, input_data, output_data):
 
 
 def process_log_data(spark, input_data, output_data):
+
+    """
+    Read all JSON files related to the events data in the Sparkify app 
+    to create dimensional tables for the data lake.
+
+    Read JSON format and store produced tables in Parquet formt in the 
+    specified output directory.
+
+    Parameters:
+    ==================
+    spark: Running/Active Spark session
+    input_data: S3 bucket or local directory to the JSON files
+    output_data: S3 bucket or local directory to write parquet files
+
+    Returns: None
+    """
+
     # get filepath to log data file
     log_data = os.path.join(input_data, 'log_data/*/*/*.json')
 
@@ -78,7 +111,7 @@ def process_log_data(spark, input_data, output_data):
                 dayofweek(col("start_time")).alias("dow"))
     
     # write time table to parquet files partitioned by year and month
-    time_table.write.parquet(output_data + "timetable")
+    time_table.write.partitionBy("year", "month")parquet(output_data + "timetable")
 
     # read in song data to use for songplays table
     song_path = os.path.join(input_data, 'song_data/*/*/*/*.json')
